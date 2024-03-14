@@ -1,0 +1,47 @@
+{
+  "name": "create-next-contentful-app",
+  "version": "0.0.1",
+  "description": "Cli tool to create Next.js project with Headless stack (Contentful, Algolia, GraphQL, Vercel, Storybook, Github Actions, and more).",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx ./index.ts --",
+    "build": "ncc build ./index.ts -o ./dist/ --minify --no-cache --no-source-map-register"
+  },
+  "bin": {
+    "create-next-contentful-app": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aplyca/create-next-contentful-app.git"
+  },
+  "keywords": [
+    "cli",
+    "nextjs",
+    "template",
+    "contentful",
+    "headless"
+  ],
+  "author": "Brandon Sanchez <bsanchez@aplyca.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aplyca/create-next-contentful-app/issues"
+  },
+  "homepage": "https://github.com/Aplyca/create-next-contentful-app#readme",
+  "devDependencies": {
+    "@types/conf": "3.0.0",
+    "@types/node": "20.11.25",
+    "@types/prompts": "2.4.9",
+    "@types/validate-npm-package-name": "4.0.2",
+    "@vercel/ncc": "0.38.1",
+    "chalk": "4.1.2",
+    "commander": "12.0.0",
+    "contentful-cli": "3.1.43",
+    "degit": "2.8.4",
+    "prompts": "2.4.2",
+    "tsx": "4.7.1",
+    "validate-npm-package-name": "5.0.0"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
