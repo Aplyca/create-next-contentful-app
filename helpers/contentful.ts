@@ -58,7 +58,7 @@ const checkUrlManagerInstall = async () => {
       );
 
       exec(
-        `${starter} https://app.contentful.com/deeplink\?link\=apps\&id\=kLjkQFK44rW7yaGJq4vQj`
+        `${starter} "https://app.contentful.com/deeplink?link=apps&id=kLjkQFK44rW7yaGJq4vQj"`
       );
 
       await prompts({

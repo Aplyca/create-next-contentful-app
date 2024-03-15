@@ -41,22 +41,20 @@ const updateTextInFiles = (projectName: string, defaultLocale: string) => {
   const projectNameMin = projectName.toLowerCase();
   const projectNameMax = projectName.toUpperCase().replace("-", "_");
 
-  for (const file in FILES_TO_UPDATE) {
+  console.log();
+  
+  for (const file of FILES_TO_UPDATE) {
     const filePath = path.join(projectName, file);
+    console.log('Updating file: ' + filePath);
 
-    fs.readFile(filePath, "utf8", (err, data) => {
-      if (err) {
-        console.error(`Error al leer el archivo ${filePath}: ${err}`);
-        return;
-      }
+    let fileContent = fs.readFileSync(filePath, "utf-8");
 
-      data = data.replace(/\[PROJECT_NAME_MIN\]/g, projectNameMin);
-      data = data.replace(/\[PROJECT_NAME_MAX\]/g, projectNameMax);
-      data = data.replace(/\[DEFAULT_LOCALE\]/g, defaultLocale);
-      data = data.replace(/\[PROJECT_NAME\]/g, projectName);
+    fileContent = fileContent.replace(/\[PROJECT_NAME_MIN\]/g, projectNameMin);
+    fileContent = fileContent.replace(/\[PROJECT_NAME_MAY\]/g, projectNameMax);
+    fileContent = fileContent.replace(/\[DEFAULT_LOCALE\]/g, defaultLocale);
+    fileContent = fileContent.replace(/\[PROJECT_NAME\]/g, projectName);
 
-      fs.writeFileSync(filePath, data, "utf8");
-    });
+    fs.writeFileSync(filePath, fileContent, "utf8");
   }
 };
 
@@ -94,6 +92,7 @@ const cloneNextJsTemplate = async (
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), "utf8");
     updateTextInFiles(projectName, cfOptions.CONTENTFUL_DEFAULT_LOCALE);
 
+    console.log();
     console.log(
       `Project created successfully, please run the following command to run your project:`
     );
