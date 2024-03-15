@@ -112,9 +112,70 @@ const createContentfulModel = async (
   }
 };
 
+export const getContentfulInfo = async (
+  options: Record<string, string>
+): Promise<Record<string, string>> => {
+  const contentfulData = {
+    CONTENTFUL_DELIVERY_API_TOKEN: "",
+    CONTENTFUL_ENVIRONMENT: "",
+    CONTENTFUL_SPACE_ID: "",
+    CONTENTFUL_PREVIEW_API_TOKEN: "",
+    CONTENTFUL_DEFAULT_LOCALE: "",
+  };
+
+  contentfulData.CONTENTFUL_SPACE_ID =
+    options?.cfSpaceId ??
+    options?.CONTENTFUL_SPACE_ID ??
+    (await getInfoData(
+      `Please provide the ${chalk.blue(
+        "Contentful Space ID"
+      )} to add it to your project:`
+    ));
+
+  contentfulData.CONTENTFUL_DEFAULT_LOCALE =
+    options?.CONTENTFUL_DEFAULT_LOCALE ??
+    (await getInfoData(
+      `Please provide the ${chalk.blue(
+        "Contentful default locale"
+      )} to create the content model and import data:`,
+      "en-US"
+    ));
+
+  contentfulData.CONTENTFUL_DELIVERY_API_TOKEN =
+    options?.cfCdaToken ??
+    options?.CONTENTFUL_DELIVERY_API_TOKEN ??
+    (await getInfoData(
+      `Please provide the ${chalk.blue(
+        "Contentful CDA Token"
+      )} to add it to your project:`
+    ));
+
+  contentfulData.CONTENTFUL_PREVIEW_API_TOKEN =
+    options?.cfCdaToken ??
+    options?.CONTENTFUL_PREVIEW_API_TOKEN ??
+    (await getInfoData(
+      `Please provide the ${chalk.blue(
+        "Contentful Preview Token"
+      )} token to add it to your project:`
+    ));
+
+  contentfulData.CONTENTFUL_ENVIRONMENT =
+    options?.cfEnv ??
+    options?.CONTENTFUL_ENVIRONMENT ??
+    (await getInfoData(
+      `Please provide the ${chalk.blue(
+        "Contentful Environment"
+      )} id to add it to your project:`,
+      "master"
+    ));
+
+  return contentfulData;
+};
+
 const executeContentfulStuffs = async (
   options: Record<string, string>
 ): Promise<Record<string, string>> => {
+  let contentfulData: Record<string, string> = {};
   const confirmContentfulInstall = await prompts({
     onState: onPromptState,
     type: "confirm",
@@ -129,61 +190,19 @@ const executeContentfulStuffs = async (
         "Contentful CMA Token"
       )} to create the content model and import data:`
     );
-    const contentfulLocale = await getInfoData(
-      `Please provide the ${chalk.blue(
-        "Contentful default locale"
-      )} to create the content model and import data:`,
-      "en-US"
-    );
 
-    const contentfulCDAToken =
-      options?.cfCdaToken ??
-      (await getInfoData(
-        `Please provide the ${chalk.blue(
-          "Contentful CDA Token"
-        )} to add it to your project:`
-      ));
-    const contentfulPreviewToken =
-      options?.cfCdaToken ??
-      (await getInfoData(
-        `Please provide the ${chalk.blue(
-          "Contentful Preview Token"
-        )} token to add it to your project:`
-      ));
-    const contentfulEnv =
-      options?.cfEnv ??
-      (await getInfoData(
-        `Please provide the ${chalk.blue(
-          "Contentful Environment"
-        )} id to add it to your project:`,
-        "master"
-      ));
-    const contentfulSpaceId =
-      options?.cfSpaceId ??
-      (await getInfoData(
-        `Please provide the ${chalk.blue(
-          "Contentful Space ID"
-        )} to add it to your project:`
-      ));
+    contentfulData = await getContentfulInfo(options);
 
     await checkUrlManagerInstall();
     await createContentfulModel(
-      contentfulSpaceId,
-      contentfulEnv,
+      contentfulData.CONTENTFUL_SPACE_ID,
+      contentfulData.CONTENTFUL_ENVIRONMENT,
       contentfulCMAToken,
-      contentfulLocale
+      contentfulData.CONTENTFUL_DEFAULT_LOCALE
     );
-
-    return {
-      CONTENTFUL_DELIVERY_API_TOKEN: contentfulCDAToken,
-      CONTENTFUL_ENVIRONMENT: contentfulEnv,
-      CONTENTFUL_SPACE_ID: contentfulSpaceId,
-      CONTENTFUL_PREVIEW_API_TOKEN: contentfulPreviewToken,
-      CONTENTFUL_DEFAULT_LOCALE: contentfulLocale,
-    };
   }
 
-  return {};
+  return contentfulData;
 };
 
 export default executeContentfulStuffs;

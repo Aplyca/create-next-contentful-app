@@ -3,6 +3,7 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
+import { getContentfulInfo } from "./contentful";
 
 const FILES_TO_UPDATE = [
   "src/app/providers.tsx",
@@ -74,7 +75,9 @@ const cloneNextJsTemplate = async (
       }
     );
 
-    const envString = Object.entries(cfVars)
+    const cfOptions = await getContentfulInfo(cfVars);
+
+    const envString = Object.entries(cfOptions)
       .filter(([key]) => key !== "CONTENTFUL_DEFAULT_LOCALE")
       .map(([key, value]) => `${key}=${value}`)
       .join("\n");
@@ -89,7 +92,7 @@ const cloneNextJsTemplate = async (
 
     fs.writeFileSync(envFilePath, envString, "utf8");
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), "utf8");
-    updateTextInFiles(projectName, cfVars.CONTENTFUL_DEFAULT_LOCALE);
+    updateTextInFiles(projectName, cfOptions.CONTENTFUL_DEFAULT_LOCALE);
 
     console.log(
       `Project created successfully, please run the following command to run your project:`
