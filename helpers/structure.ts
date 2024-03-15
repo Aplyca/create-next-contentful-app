@@ -4,6 +4,14 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 
+const FILES_TO_UPDATE = [
+  "src/app/providers.tsx",
+  "src/services/entry-content.service.ts",
+  "src/services/page-content.service.ts",
+  "docker-compose.yml",
+  "README.md",
+];
+
 const createProjectFolder = (projectName: string) => {
   const currentPath = process.cwd();
   const projectPath = path.join(currentPath, projectName);
@@ -28,6 +36,29 @@ const createProjectFolder = (projectName: string) => {
   }
 };
 
+const updateTextInFiles = (projectName: string, defaultLocale: string) => {
+  const projectNameMin = projectName.toLowerCase();
+  const projectNameMax = projectName.toUpperCase().replace("-", "_");
+
+  for (const file in FILES_TO_UPDATE) {
+    const filePath = path.join(projectName, file);
+
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        console.error(`Error al leer el archivo ${filePath}: ${err}`);
+        return;
+      }
+
+      data = data.replace(/\[PROJECT_NAME_MIN\]/g, projectNameMin);
+      data = data.replace(/\[PROJECT_NAME_MAX\]/g, projectNameMax);
+      data = data.replace(/\[DEFAULT_LOCALE\]/g, defaultLocale);
+      data = data.replace(/\[PROJECT_NAME\]/g, projectName);
+
+      fs.writeFileSync(filePath, data, "utf8");
+    });
+  }
+};
+
 const cloneNextJsTemplate = async (
   projectName: string,
   cfVars: Record<string, string>
@@ -44,6 +75,7 @@ const cloneNextJsTemplate = async (
     );
 
     const envString = Object.entries(cfVars)
+      .filter(([key]) => key !== "CONTENTFUL_DEFAULT_LOCALE")
       .map(([key, value]) => `${key}=${value}`)
       .join("\n");
 
@@ -55,15 +87,26 @@ const cloneNextJsTemplate = async (
 
     packageJson.name = projectName;
 
-    fs.writeFileSync(envFilePath, envString);
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    fs.writeFileSync(envFilePath, envString, "utf8");
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), "utf8");
+    updateTextInFiles(projectName, cfVars.CONTENTFUL_DEFAULT_LOCALE);
 
-    console.log(`Project created successfully, please run the following command to run your project:`);
-    console.log(`   ${chalk.green('cd')} ${chalk.gray(projectName)}`);
-    console.log(`   ${chalk.green('yarn|npm|bun|pnpm')} ${chalk.gray('install')}`);
-    console.log(`   ${chalk.green('yarn|npm|bun|pnpm')} ${chalk.gray('run dev')}`);
+    console.log(
+      `Project created successfully, please run the following command to run your project:`
+    );
+    console.log(`   ${chalk.green("cd")} ${chalk.gray(projectName)}`);
+    console.log(
+      `   ${chalk.green("yarn|npm|bun|pnpm")} ${chalk.gray("install")}`
+    );
+    console.log(
+      `   ${chalk.green("yarn|npm|bun|pnpm")} ${chalk.gray("run dev")}`
+    );
     console.log();
-    console.log(`Remember, the project has Docker implemented and with «${chalk.green('make')}» commands you can manage yor project; see README.md for more.`);
+    console.log(
+      `Remember, the project has Docker implemented and with «${chalk.green(
+        "make"
+      )}» commands you can manage yor project; see README.md for more.`
+    );
   } catch (error) {
     console.error("Error creating the APP project, reason:", error);
   }

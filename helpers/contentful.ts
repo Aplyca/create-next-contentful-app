@@ -119,7 +119,7 @@ const executeContentfulStuffs = async (
     onState: onPromptState,
     type: "confirm",
     name: "value",
-    message: `Do you want to create the content model and import the initial data to your Contentful space?`,
+    message: `Would you like to create the content model and import the initial data to your Contentful space?`,
     initial: false,
   });
 
@@ -179,6 +179,7 @@ const executeContentfulStuffs = async (
       CONTENTFUL_ENVIRONMENT: contentfulEnv,
       CONTENTFUL_SPACE_ID: contentfulSpaceId,
       CONTENTFUL_PREVIEW_API_TOKEN: contentfulPreviewToken,
+      CONTENTFUL_DEFAULT_LOCALE: contentfulLocale,
     };
   }
 
